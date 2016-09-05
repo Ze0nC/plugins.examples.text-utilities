@@ -1,0 +1,55 @@
+{
+  "author" : "Johnnie Walker",
+  "commands" : [
+    {
+      "script" : "baselines.cocoascript",
+      "handler" : "onRun",
+      "shortcut" : "",
+      "name" : "Add Line Fragments & Baselines",
+      "identifier" : "fragmentsandbaselines"
+    },
+    {
+      "script" : "baselines.cocoascript",
+      "handler" : "onAddBaselines",
+      "shortcut" : "",
+      "name" : "Add Baselines",
+      "identifier" : "baselines"
+    },
+    {
+      "script" : "baselines.cocoascript",
+      "handler" : "onAddLineFragments",
+      "shortcut" : "",
+      "name" : "Add Line Fragments",
+      "identifier" : "fragments"
+    },
+    {
+      "script" : "consistentBaselines.cocoascript",
+      "handler" : "onUseLegacyBaselines",
+      "shortcut" : "",
+      "name" : "Use legacy typesetter",
+      "identifier" : "legacyTypestter"
+    },
+    {
+      "script" : "consistentBaselines.cocoascript",
+      "handler" : "onUseConstantBaselines",
+      "shortcut" : "",
+      "name" : "Use constant baselines typesetter",
+      "identifier" : "constantBaselinesTypesetter"
+    },
+  ],
+  "menu": {
+    "items": [
+      "baselines",
+      "fragments",
+      "fragmentsandbaselines",
+      "-",
+      "legacyTypestter",
+      "constantBaselinesTypesetter",
+    ],
+  },
+  "identifier" : "com.randomsequence.sketch.baselines",
+  "version" : "1.0",
+  "description" : "Utilities for text layers",
+  "authorEmail" : "mail@example.com",
+  "name" : "Text Layer Utilities"
+}
