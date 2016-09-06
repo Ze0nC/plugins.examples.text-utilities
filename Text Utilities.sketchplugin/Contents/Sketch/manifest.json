@@ -23,14 +23,14 @@
       "identifier" : "fragments"
     },
     {
-      "script" : "consistentBaselines.js",
+      "script" : "spacing.js",
       "handler" : "onUseLegacyBaselines",
       "shortcut" : "",
       "name" : "Use legacy typesetter",
-      "identifier" : "legacyTypestter"
+      "identifier" : "legacyTypesetter"
     },
     {
-      "script" : "consistentBaselines.js",
+      "script" : "spacing.js",
       "handler" : "onUseConstantBaselines",
       "shortcut" : "",
       "name" : "Use constant baselines typesetter",
@@ -43,13 +43,13 @@
       "fragments",
       "fragmentsandbaselines",
       "-",
-      "legacyTypestter",
+      "legacyTypesetter",
       "constantBaselinesTypesetter",
     ],
   },
-  "identifier" : "com.randomsequence.sketch.baselines",
-  "version" : "1.0",
+  "identifier" : "com.sketchapp.examples.text-utilities",
+  "version" : "2.0",
   "description" : "Utilities for text layers",
-  "authorEmail" : "mail@example.com",
+  "authorEmail" : "developer@sketchapp.com",
   "name" : "Text Layer Utilities"
 }

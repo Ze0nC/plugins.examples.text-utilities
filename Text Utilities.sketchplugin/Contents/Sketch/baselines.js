@@ -1,5 +1,3 @@
-@import "library.cocoascript";
-
 var fillInRect = function(container, rect, color) {
   if (! color) {
     color = [MSColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:0.6];
