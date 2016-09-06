@@ -4,18 +4,18 @@ var fillInRect = function(container, rect, color) {
   if (! color) {
     color = [MSColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:0.6];
   }
-  var containerRect = NSZeroRect;
-  containerRect.origin = container.convertPointToLayerCoordinates(rect.origin);
-  containerRect.size = rect.size;
-  var line = SketchLib.addShapeLayer(container, {"rect": containerRect, "color": color});
-  var style = line.style();
+  var containerRect = container.pageRectToLocalRect(rect);
+  var line = container.newShape({"frame": containerRect, "color": color});
+  var style = line._object.style();
   style.fill().enabled = true;
   var border = style.border();
   if (border) {border.enabled = false;}
   return line;
 }
 
-var getLineFragments = function(textLayer) {
+
+var getLineFragments = function(layer) {
+  var textLayer = layer._object
   var storage = textLayer.createTextStorage();
   var layout = storage.layoutManagers().firstObject();
   var actualCharacterRangePtr = MOPointer.new();
@@ -40,18 +40,18 @@ var getLineFragments = function(textLayer) {
   return fragments;
 }
 
-var addBaselines = function(container, fragments) {
 
-  var group = SketchLib.addLayerGroup(container, {"name": "Baselines" });
-  MSLayerMovement.moveToBack([group]);
+var addBaselines = function(sketch, container, fragments) {
+
+  var group = container.newGroup({"name": "Baselines" });
+  group.moveToBack();
 
   var fragmentCount = fragments.count();
   for (var i=0; i<fragmentCount; i++) {
     var fragment = fragments[i];
     var rect = fragment.rect;
     var baselineOffset = fragment.baselineOffset;
-
-    var baselineRect = NSMakeRect(
+    var baselineRect = sketch.rectangle(
       NSMinX(rect),
       NSMaxY(rect)-baselineOffset,
       NSWidth(rect),
@@ -64,64 +64,53 @@ var addBaselines = function(container, fragments) {
   [group resizeToFitChildrenWithOption:0];
 }
 
-var addLineFragments = function(container, fragments) {
-  var group = SketchLib.addLayerGroup(container, {"name": "Line Fragments" });
-  MSLayerMovement.moveToBack([group]);
+
+var addLineFragments = function(sketch, container, fragments) {
+  var group = container.newGroup({"name": "Line Fragments" });
+  group.moveToBack();
 
   var fragmentCount = fragments.count();
   for (var i=0; i<fragmentCount; i++) {
     var fragment = fragments[i];
     var rect = fragment.rect;
+    var fragmentRect = sketch.rectangle(rect.origin.x, rect.origin.y, rect.size.width, rect.size.height)
     var alpha = ( i & 1 ) ? 0.1 : 0.25;
     var color = [MSColor colorWithRed:0.0 green:1.0 blue:0.0 alpha:alpha];
-    fillInRect(group, rect, color);
+    fillInRect(group, fragmentRect, color);
   }
 
   [group resizeToFitChildrenWithOption:0];
 }
 
-var onAddLineFragments = function(context) {
-  var doc = context.document;
-  var plugin = context.plugin;
 
-  var selection = context.selection;
-  for (var i=0; i<selection.count(); i++) {
-  	var layer = selection[i];
-  	if ([layer isKindOfClass:[MSTextLayer class]]) {
-      var lineFragments = getLineFragments(layer);
-      var container = layer.parentGroup();
-      addLineFragments(container, lineFragments);
-    }
-  }
+var onAddLineFragments = function(context) {
+    var sketch = context.api()
+    sketch.selectedDocument.selectedLayers.iterate(function(layer) {
+        if (layer.isText) {
+            var lineFragments = getLineFragments(layer);
+            addLineFragments(sketch, layer.container, lineFragments);
+        }
+    })
 };
 
 var onAddBaselines = function(context) {
-  var doc = context.document;
-  var plugin = context.plugin;
-
-  var selection = context.selection;
-  for (var i=0; i<selection.count(); i++) {
-  	var layer = selection[i];
-  	if ([layer isKindOfClass:[MSTextLayer class]]) {
-      var lineFragments = getLineFragments(layer);
-      var container = layer.parentGroup();
-      addBaselines(container, lineFragments);
-    }
-  }
+    var sketch = context.api()
+    sketch.selectedDocument.selectedLayers.iterate(function(layer) {
+        if (layer.isText) {
+            var lineFragments = getLineFragments(layer);
+            addBaselines(sketch, layer.container, lineFragments);
+        }
+    })
 };
 
-var onRun = function(context) {
-  var doc = context.document;
-  var plugin = context.plugin;
-
-  var selection = context.selection;
-  for (var i=0; i<selection.count(); i++) {
-  	var layer = selection[i];
-  	if ([layer isKindOfClass:[MSTextLayer class]]) {
-      var lineFragments = getLineFragmentsNative(layer);
-      var container = layer.parentGroup();
-      addBaselines(container, lineFragments);
-      addLineFragments(container, lineFragments);
-    }
-  }
+var onAddBoth = function(context) {
+    var sketch = context.api()
+    sketch.selectedDocument.selectedLayers.iterate(function(layer) {
+        if (layer.isText) {
+            var lineFragments = getLineFragmentsNative(layer);
+            var container = layer.container;
+            addBaselines(sketch, container, lineFragments);
+            addLineFragments(sketch, container, lineFragments);
+        }
+    })
 };

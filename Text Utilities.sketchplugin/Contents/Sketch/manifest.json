@@ -2,35 +2,35 @@
   "author" : "Johnnie Walker",
   "commands" : [
     {
-      "script" : "baselines.cocoascript",
-      "handler" : "onRun",
+      "script" : "baselines.js",
+      "handler" : "onAddBoth",
       "shortcut" : "",
       "name" : "Add Line Fragments & Baselines",
       "identifier" : "fragmentsandbaselines"
     },
     {
-      "script" : "baselines.cocoascript",
+      "script" : "baselines.js",
       "handler" : "onAddBaselines",
       "shortcut" : "",
       "name" : "Add Baselines",
       "identifier" : "baselines"
     },
     {
-      "script" : "baselines.cocoascript",
+      "script" : "baselines.js",
       "handler" : "onAddLineFragments",
       "shortcut" : "",
       "name" : "Add Line Fragments",
       "identifier" : "fragments"
     },
     {
-      "script" : "consistentBaselines.cocoascript",
+      "script" : "consistentBaselines.js",
       "handler" : "onUseLegacyBaselines",
       "shortcut" : "",
       "name" : "Use legacy typesetter",
       "identifier" : "legacyTypestter"
     },
     {
-      "script" : "consistentBaselines.cocoascript",
+      "script" : "consistentBaselines.js",
       "handler" : "onUseConstantBaselines",
       "shortcut" : "",
       "name" : "Use constant baselines typesetter",
