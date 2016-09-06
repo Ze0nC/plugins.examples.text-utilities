@@ -41,45 +41,42 @@ var getLineFragments = function(layer) {
 }
 
 
+var processFragments = function(sketch, container, fragments, title, action) {
+    var group = container.newGroup({"name": title });
+    group.moveToBack();
+
+    var fragmentCount = fragments.count();
+    for (var i=0; i<fragmentCount; i++) {
+      var fragment = fragments[i];
+      action(sketch, group, fragment, i);
+    }
+
+    group.adjustToFit();
+}
+
 var addBaselines = function(sketch, container, fragments) {
-
-  var group = container.newGroup({"name": "Baselines" });
-  group.moveToBack();
-
-  var fragmentCount = fragments.count();
-  for (var i=0; i<fragmentCount; i++) {
-    var fragment = fragments[i];
-    var rect = fragment.rect;
-    var baselineOffset = fragment.baselineOffset;
-    var baselineRect = sketch.rectangle(
-      NSMinX(rect),
-      NSMaxY(rect)-baselineOffset,
-      NSWidth(rect),
-      0.5
-    );
-
-    fillInRect(group, baselineRect);
-  }
-
-  [group resizeToFitChildrenWithOption:0];
+    processFragments(sketch, container, fragments, "Baselines", function(sketch, group, fragment, index) {
+        var rect = fragment.rect;
+        var baselineOffset = fragment.baselineOffset;
+        var baselineRect = sketch.rectangle(
+          NSMinX(rect),
+          NSMaxY(rect)-baselineOffset,
+          NSWidth(rect),
+          0.5
+        );
+        fillInRect(group, baselineRect);
+    })
 }
 
 
 var addLineFragments = function(sketch, container, fragments) {
-  var group = container.newGroup({"name": "Line Fragments" });
-  group.moveToBack();
-
-  var fragmentCount = fragments.count();
-  for (var i=0; i<fragmentCount; i++) {
-    var fragment = fragments[i];
-    var rect = fragment.rect;
-    var fragmentRect = sketch.rectangle(rect.origin.x, rect.origin.y, rect.size.width, rect.size.height)
-    var alpha = ( i & 1 ) ? 0.1 : 0.25;
-    var color = [MSColor colorWithRed:0.0 green:1.0 blue:0.0 alpha:alpha];
-    fillInRect(group, fragmentRect, color);
-  }
-
-  [group resizeToFitChildrenWithOption:0];
+    processFragments(sketch, container, fragments, "Line Fragments", function(sketch, group, fragment, index) {
+        var rect = fragment.rect;
+        var fragmentRect = sketch.rectangle(rect.origin.x, rect.origin.y, rect.size.width, rect.size.height)
+        var alpha = ( index & 1 ) ? 0.1 : 0.25;
+        var color = [MSColor colorWithRed:0.0 green:1.0 blue:0.0 alpha:alpha];
+        fillInRect(group, fragmentRect, color);
+    })
 }
 
 
