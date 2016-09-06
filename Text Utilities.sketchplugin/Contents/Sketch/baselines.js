@@ -80,26 +80,26 @@ var addLineFragments = function(sketch, container, fragments) {
 
 var onAddLineFragments = function(context) {
     var sketch = context.api()
-    sketch.selectedDocument.selectedLayers.iterate(filter = "isText", function(layer) {
+    sketch.selectedDocument.selectedLayers.iterate(function(layer) {
         var lineFragments = getLineFragments(layer);
         addLineFragments(sketch, layer.container, lineFragments);
-    })
+    }, "isText")
 };
 
 var onAddBaselines = function(context) {
     var sketch = context.api()
-    sketch.selectedDocument.selectedLayers.iterate(filter = "isText", function(layer) {
+    sketch.selectedDocument.selectedLayers.iterate(function(layer) {
         var lineFragments = getLineFragments(layer);
         addBaselines(sketch, layer.container, lineFragments);
-    })
+    }, "isText")
 };
 
 var onAddBoth = function(context) {
     var sketch = context.api()
-    sketch.selectedDocument.selectedLayers.iterate(filter = "isText", function(layer) {
+    sketch.selectedDocument.selectedLayers.iterate(function(layer) {
         var lineFragments = getLineFragments(layer);
         var container = layer.container;
         addBaselines(sketch, container, lineFragments);
         addLineFragments(sketch, container, lineFragments);
-    })
+    }, "isText")
 };
