@@ -4,10 +4,9 @@ var fillInRect = function(container, rect, color) {
   }
   var containerRect = container.pageRectToLocalRect(rect);
   var line = container.newShape({"frame": containerRect, "color": color});
+  line.style.fillEnabled = true
+  line.style.borderEnabled = false
   var style = line._object.style();
-  style.fill().enabled = true;
-  var border = style.border();
-  if (border) {border.enabled = false;}
   return line;
 }
 
