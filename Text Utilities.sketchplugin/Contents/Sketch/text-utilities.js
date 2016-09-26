@@ -33,8 +33,7 @@
 // The Plugin needs a `manifest.json` file. This tells Sketch which menu items your Plugin supplies,
 // as well as giving some general information about the Plugin such as its name, author, and so on.
 //
-// A single Plugin can supply multiple menu items, and each one can execute different code,
-// or they can all share code. In our case though, we just have one command.
+// As this Plugin illustrates, we can supply multiple menu items, and each one can execute a different command.
 //
 //  ```json
 // {
@@ -104,7 +103,7 @@ var fillInRect = function(container, rect, color) {
     color = [MSColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:0.6];
   }
   var containerRect = container.pageRectToLocalRect(rect);
-  var line = container.newShape({"frame": containerRect, "color": color});
+  var line = container.newShape({"frame": containerRect, "color": color}); // TODO: specify fill and no border directly in the dictionary?
   line.style.fillEnabled = true
   line.style.borderEnabled = false
   var style = line._object.style();
@@ -112,7 +111,7 @@ var fillInRect = function(container, rect, color) {
 }
 
 
-var getLineFragments = function(layer) {
+var getLineFragments = function(layer) { // TODO: move into the Text class.
   var textLayer = layer._object
   var storage = textLayer.createTextStorage();
   var layout = storage.layoutManagers().firstObject();
@@ -131,7 +130,7 @@ var getLineFragments = function(layer) {
     rect = textLayer.convertRectToAbsoluteCoordinates(rect);
     var effectiveRange = effectiveRangePtr.value();
     var baselineOffset = [[layout typesetter] baselineOffsetInLayoutManager:layout glyphIndex:currentLocation];
-    fragments.addObject({"rect": rect, "baselineOffset": baselineOffset, range: effectiveRange});
+    fragments.addObject({"rect": rect, "baselineOffset": baselineOffset, range: effectiveRange}); // TODO: use Rectangle class
     currentLocation = NSMaxRange(effectiveRange)+1;
   }
 
