@@ -2,35 +2,35 @@
   "author" : "Johnnie Walker",
   "commands" : [
     {
-      "script" : "baselines.js",
+      "script" : "text-utilities.js",
       "handler" : "onAddBoth",
       "shortcut" : "",
       "name" : "Add Line Fragments & Baselines",
       "identifier" : "fragmentsandbaselines"
     },
     {
-      "script" : "baselines.js",
+      "script" : "text-utilities.js",
       "handler" : "onAddBaselines",
       "shortcut" : "",
       "name" : "Add Baselines",
       "identifier" : "baselines"
     },
     {
-      "script" : "baselines.js",
+      "script" : "text-utilities.js",
       "handler" : "onAddLineFragments",
       "shortcut" : "",
       "name" : "Add Line Fragments",
       "identifier" : "fragments"
     },
     {
-      "script" : "spacing.js",
+      "script" : "text-utilities.js",
       "handler" : "onUseLegacyBaselines",
       "shortcut" : "",
       "name" : "Use legacy typesetter",
       "identifier" : "legacyTypesetter"
     },
     {
-      "script" : "spacing.js",
+      "script" : "text-utilities.js",
       "handler" : "onUseConstantBaselines",
       "shortcut" : "",
       "name" : "Use constant baselines typesetter",
