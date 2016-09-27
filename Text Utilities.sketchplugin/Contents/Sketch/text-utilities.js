@@ -97,20 +97,6 @@
 // So now we need to put some code into the `resources.js` file to implement that command.
 
 
-
-var fillInRect = function(container, rect, color) {
-  if (! color) {
-    color = [MSColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:0.6];
-  }
-  var containerRect = container.pageRectToLocalRect(rect);
-  var line = container.newShape({"frame": containerRect, "color": color}); // TODO: specify fill and no border directly in the dictionary?
-  line.style.fillEnabled = true
-  line.style.borderEnabled = false
-  var style = line._object.style();
-  return line;
-}
-
-
 var getLineFragments = function(layer) { // TODO: move into the Text class.
   var textLayer = layer._object
   var storage = textLayer.createTextStorage();
@@ -161,7 +147,8 @@ var addBaselines = function(sketch, container, fragments) {
           NSWidth(rect),
           0.5
         );
-        fillInRect(group, baselineRect);
+        var localRect = group.pageRectToLocalRect(baselineRect);
+        group.newShape({"frame": localRect, fills: ["#ff000090"], borders: []});
     })
 }
 
@@ -170,9 +157,9 @@ var addLineFragments = function(sketch, container, fragments) {
     processFragments(sketch, container, fragments, "Line Fragments", function(sketch, group, fragment, index) {
         var rect = fragment.rect;
         var fragmentRect = sketch.rectangle(rect.origin.x, rect.origin.y, rect.size.width, rect.size.height)
-        var alpha = ( index & 1 ) ? 0.1 : 0.25;
-        var color = [MSColor colorWithRed:0.0 green:1.0 blue:0.0 alpha:alpha];
-        fillInRect(group, fragmentRect, color);
+        var color = ( index & 1 ) ? "#00ff00ff" : "#00fff0044"
+        var localRect = group.pageRectToLocalRect(fragmentRect);
+        var line = group.newShape({"frame": localRect, fills: [color], borders: []});
     })
 }
 
@@ -202,6 +189,7 @@ var onAddLineFragments = function(context) {
     }, "isText")
 };
 
+
 var onAddBaselines = function(context) {
     var sketch = context.api()
     sketch.selectedDocument.selectedLayers.iterate(function(layer) {
@@ -209,6 +197,7 @@ var onAddBaselines = function(context) {
         addBaselines(sketch, layer.container, lineFragments);
     }, "isText")
 };
+
 
 var onAddBoth = function(context) {
     var sketch = context.api()
@@ -224,6 +213,7 @@ var onAddBoth = function(context) {
 var onUseLegacyBaselines = function(context) {
     setTypeSetterMode(context, 1);
 }
+
 
 var onUseConstantBaselines = function(context) {
     setTypeSetterMode(context, 2);
