@@ -137,55 +137,44 @@ var addLineFragments = function(sketch, container, fragments) {
 }
 
 
-var setTypeSetterMode = function(context, lineSpacingBehaviour) {
-    var sketch = context.api()
-    sketch.selectedDocument.selectedLayers.iterate(function(layer) {
-        var textLayer = layer._object;
-        var initialBaselineOffset = textLayer.firstBaselineOffset();
-        textLayer.lineSpacingBehaviour = lineSpacingBehaviour;
-        var baselineOffset = textLayer.firstBaselineOffset();
-
-        var rect = layer.frame;
-        rect.y -= (baselineOffset - initialBaselineOffset);
-        layer.frame = rect;
-        sketch.log("Set spacing mode for '" + layer.name + "' to " + lineSpacingBehaviour)
-    }, "isText")
-}
-
-
-
 var onAddLineFragments = function(context) {
     var sketch = context.api()
-    sketch.selectedDocument.selectedLayers.iterate(function(layer) {
+    sketch.selectedDocument.selectedLayers.iterateWithFilter("isText", function(layer) {
         addLineFragments(sketch, layer.container, layer.fragments)
-    }, "isText")
+    })
 };
 
 
 var onAddBaselines = function(context) {
     var sketch = context.api()
-    sketch.selectedDocument.selectedLayers.iterate(function(layer) {
+    sketch.selectedDocument.selectedLayers.iterateWithFilter("isText", function(layer) {
         addBaselines(sketch, layer.container, layer.fragments)
-    }, "isText")
+    })
 };
 
 
 var onAddBoth = function(context) {
     var sketch = context.api()
-    sketch.selectedDocument.selectedLayers.iterate(function(layer) {
+    sketch.selectedDocument.selectedLayers.iterateWithFilter("isText", function(layer) {
         var lineFragments = layer.fragments
         var container = layer.container
         addBaselines(sketch, container, lineFragments)
         addLineFragments(sketch, container, lineFragments)
-    }, "isText")
+    })
 };
 
 
 var onUseLegacyBaselines = function(context) {
-    setTypeSetterMode(context, 1)
+  var sketch = context.api()
+  sketch.selectedDocument.selectedLayers.iterateWithFilter("isText", function(layer) {
+    layer.useConstantBaselines = false
+  })
 }
 
 
 var onUseConstantBaselines = function(context) {
-    setTypeSetterMode(context, 2)
+  var sketch = context.api()
+  sketch.selectedDocument.selectedLayers.iterateWithFilter("isText", function(layer) {
+    layer.useConstantBaselines = true
+  })
 }
