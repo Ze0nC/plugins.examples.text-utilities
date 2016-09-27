@@ -97,33 +97,6 @@
 // So now we need to put some code into the `resources.js` file to implement that command.
 
 
-var getLineFragments = function(layer) { // TODO: move into the Text class.
-  var textLayer = layer._object
-  var storage = textLayer.createTextStorage();
-  var layout = storage.layoutManagers().firstObject();
-  var actualCharacterRangePtr = MOPointer.new();
-  var charRange = NSMakeRange(0, storage.length());
-  var origin = textLayer.rect().origin;
-
-  [layout glyphRangeForCharacterRange:charRange actualCharacterRange:actualCharacterRangePtr];
-  var glyphRange = actualCharacterRangePtr.value();
-
-  var fragments = NSMutableArray.new();
-  var currentLocation = 0;
-  while (currentLocation < NSMaxRange(glyphRange)) {
-    var effectiveRangePtr = MOPointer.new();
-    var rect = [layout lineFragmentRectForGlyphAtIndex:currentLocation effectiveRange:effectiveRangePtr];
-    rect = textLayer.convertRectToAbsoluteCoordinates(rect);
-    var effectiveRange = effectiveRangePtr.value();
-    var baselineOffset = [[layout typesetter] baselineOffsetInLayoutManager:layout glyphIndex:currentLocation];
-    fragments.addObject({"rect": rect, "baselineOffset": baselineOffset, range: effectiveRange}); // TODO: use Rectangle class
-    currentLocation = NSMaxRange(effectiveRange)+1;
-  }
-
-  return fragments;
-}
-
-
 var processFragments = function(sketch, container, fragments, title, action) {
     var group = container.newGroup({"name": title });
     group.moveToBack();
@@ -166,7 +139,7 @@ var addLineFragments = function(sketch, container, fragments) {
 
 var setTypeSetterMode = function(context, lineSpacingBehaviour) {
     var sketch = context.api()
-    sketch.selectedDocument.selectedLayers.iterate(filter = "isText", function(layer) {
+    sketch.selectedDocument.selectedLayers.iterate(function(layer) {
         var textLayer = layer._object;
         var initialBaselineOffset = textLayer.firstBaselineOffset();
         textLayer.lineSpacingBehaviour = lineSpacingBehaviour;
@@ -176,7 +149,7 @@ var setTypeSetterMode = function(context, lineSpacingBehaviour) {
         rect.y -= (baselineOffset - initialBaselineOffset);
         layer.frame = rect;
         sketch.log("Set spacing mode for '" + layer.name + "' to " + lineSpacingBehaviour)
-    })
+    }, "isText")
 }
 
 
@@ -184,8 +157,7 @@ var setTypeSetterMode = function(context, lineSpacingBehaviour) {
 var onAddLineFragments = function(context) {
     var sketch = context.api()
     sketch.selectedDocument.selectedLayers.iterate(function(layer) {
-        var lineFragments = getLineFragments(layer);
-        addLineFragments(sketch, layer.container, lineFragments);
+        addLineFragments(sketch, layer.container, layer.fragments)
     }, "isText")
 };
 
@@ -193,8 +165,7 @@ var onAddLineFragments = function(context) {
 var onAddBaselines = function(context) {
     var sketch = context.api()
     sketch.selectedDocument.selectedLayers.iterate(function(layer) {
-        var lineFragments = getLineFragments(layer);
-        addBaselines(sketch, layer.container, lineFragments);
+        addBaselines(sketch, layer.container, layer.fragments)
     }, "isText")
 };
 
@@ -202,19 +173,19 @@ var onAddBaselines = function(context) {
 var onAddBoth = function(context) {
     var sketch = context.api()
     sketch.selectedDocument.selectedLayers.iterate(function(layer) {
-        var lineFragments = getLineFragments(layer);
-        var container = layer.container;
-        addBaselines(sketch, container, lineFragments);
-        addLineFragments(sketch, container, lineFragments);
+        var lineFragments = layer.fragments
+        var container = layer.container
+        addBaselines(sketch, container, lineFragments)
+        addLineFragments(sketch, container, lineFragments)
     }, "isText")
 };
 
 
 var onUseLegacyBaselines = function(context) {
-    setTypeSetterMode(context, 1);
+    setTypeSetterMode(context, 1)
 }
 
 
 var onUseConstantBaselines = function(context) {
-    setTypeSetterMode(context, 2);
+    setTypeSetterMode(context, 2)
 }
