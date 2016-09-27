@@ -2,7 +2,7 @@
 //
 // This plugin illustrates a few techniques:
 // - iterating over the selected layers
-// - analysing the text layout (in great detail!)
+// - iterating over the position of each line in a text layer
 // - creating new layers
 // - defining multiple commands in a single plugin
 //
@@ -89,83 +89,139 @@
 // ```
 
 // ## Code
-// ### Defining The Run Handler
 
-// In the manifest, we told Sketch that every time the "Bundled Resources Example" menu is selected,
-// we want to execute a javascript handler called `onRun` in the `resources.js` file.
+// ### Some Utilities
+// First up, we want to define a few utility functions to help us in implementing the plugin commands.
+//
+// #### Processing Fragments
+// The first of these takes a container, a list of line fragments, and an action function which it applies to each fragment.
 
-// So now we need to put some code into the `resources.js` file to implement that command.
+function processFragments(sketch, container, fragments, action) {
+  // We first move the container to the back of the document.
+  container.moveToBack()
 
+  // Then iterate through each fragment, executing the action.
+  for (var i in fragments) {
+    action(sketch, container, fragments[i], i)
+  }
 
-var processFragments = function(sketch, container, fragments, title, action) {
-    var group = container.newGroup({"name": title });
-    group.moveToBack();
-
-    for (var i in fragments) {
-      action(sketch, group, fragments[i], i)
-    }
-
-    group.adjustToFit();
+  // Finally, we adjust the container to enclose any new layers we've placed in it.
+  container.adjustToFit()
 }
 
-var addBaselines = function(sketch, layer, fragments) {
-    var container = layer.container
-    processFragments(sketch, container, fragments, "Baselines", function(sketch, group, fragment, index) {
-        var rect = layer.localRectToParentRect(fragment.rect)
-        rect.y += rect.height - fragment.baselineOffset
-        rect.height = 0.5
-        group.newShape({"frame": rect, fills: ["#ff000090"], borders: []});
-    })
+// #### Adding Baselines
+// Given a text layer and a list of its baselines, we want to be able to add a
+// group at the same location and make new rectangles in the group to represent
+// the baseline of each line of text.
+
+function addBaselines(sketch, layer, fragments) {
+
+  // First we make a new group to contain our baseline layers
+  var container = layer.container.newGroup({"name" : "Baselines"})
+
+  // The we process each fragment in turn
+  processFragments(sketch, container, fragments, function(sketch, group, fragment, index) {
+
+    // We make a rectangle that's just 0.5 pixels high, positioned to match
+    // the location of the baseline
+    var rect = layer.localRectToParentRect(fragment.rect)
+    rect.y += rect.height - fragment.baselineOffset
+    rect.height = 0.5
+
+    // We make a new shape layer with this rectangle.
+    group.newShape({"frame": rect, fills: ["#ff000090"], borders: []})
+  })
 }
 
 
-var addLineFragments = function(sketch, layer, fragments) {
-    var container = layer.container
-    processFragments(sketch, container, fragments, "Line Fragments", function(sketch, group, fragment, index) {
-        var color = ( index & 1 ) ? "#00ff00ff" : "#00fff0044"
-        var localRect = layer.localRectToParentRect(fragment.rect)
-        var line = group.newShape({"frame": localRect, fills: [color], borders: []});
-    })
+// #### Adding Line Fragments
+// Given a text layer and a list of its baselines, we want to be able to add a
+// group at the same location and make new rectangles in the group to represent
+// the lines of text.
+
+function addLineFragments(sketch, layer, fragments) {
+
+  // First we make a new group to contain our line fragments
+  var container = layer.container.newGroup({"name" : "Line Fragments"})
+
+  // The we process each fragment in turn
+  processFragments(sketch, container, fragments, function(sketch, group, fragment, index) {
+    // We alternate the color of the lines, so that we can tell them apart
+    var color = ( index & 1 ) ? "#00ff00ff" : "#00fff0044"
+
+    // We make a new shape layer with the rectangle of each line in turn
+    var localRect = layer.localRectToParentRect(fragment.rect)
+    var line = group.newShape({"frame": localRect, fills: [color], borders: []})
+  })
 }
 
 
-var onAddLineFragments = function(context) {
-    var sketch = context.api()
-    sketch.selectedDocument.selectedLayers.iterateWithFilter("isText", function(layer) {
-        addLineFragments(sketch, layer, layer.fragments)
-    })
-};
+// ### Defining The Run Handlers
+
+// In the manifest, we listed the javascript function to call for each of our five commands.
+// So now we need to implement these functions.
 
 
-var onAddBaselines = function(context) {
-    var sketch = context.api()
-    sketch.selectedDocument.selectedLayers.iterateWithFilter("isText", function(layer) {
-        addBaselines(sketch, layer, layer.fragments)
-    })
-};
-
-
-var onAddBoth = function(context) {
-    var sketch = context.api()
-    sketch.selectedDocument.selectedLayers.iterateWithFilter("isText", function(layer) {
-        var lineFragments = layer.fragments
-        addBaselines(sketch, layer, lineFragments)
-        addLineFragments(sketch, layer, lineFragments)
-    })
-};
-
-
-var onUseLegacyBaselines = function(context) {
+function onAddLineFragments(context) {
+  // Fetch the root Sketch object
   var sketch = context.api()
+
+  // Iterate over each text layer in the selection, calling our addLineFragments function
+  sketch.selectedDocument.selectedLayers.iterateWithFilter("isText", function(layer) {
+    addLineFragments(sketch, layer, layer.fragments)
+  })
+}
+
+
+function onAddBaselines(context) {
+  // Fetch the root Sketch object
+  var sketch = context.api()
+
+  // Iterate over each text layer in the selection, calling our addBaselines function
+  sketch.selectedDocument.selectedLayers.iterateWithFilter("isText", function(layer) {
+    addBaselines(sketch, layer, layer.fragments)
+  })
+}
+
+
+function onAddBoth(context) {
+  // Fetch the root Sketch object
+  var sketch = context.api()
+
+  // Iterate over each text layer in the selection, calling our addBaselines and addLineFragments functions
+  sketch.selectedDocument.selectedLayers.iterateWithFilter("isText", function(layer) {
+    var lineFragments = layer.fragments
+    addBaselines(sketch, layer, lineFragments)
+    addLineFragments(sketch, layer, lineFragments)
+  })
+}
+
+
+function onUseLegacyBaselines(context) {
+  // Fetch the root Sketch object
+  var sketch = context.api()
+
+  // Iterate over each text layer in the selection, turning off constant baselines.
   sketch.selectedDocument.selectedLayers.iterateWithFilter("isText", function(layer) {
     layer.useConstantBaselines = false
   })
 }
 
 
-var onUseConstantBaselines = function(context) {
+function onUseConstantBaselines(context) {
+  // Fetch the root Sketch object
   var sketch = context.api()
+
+  // Iterate over each text layer in the selection, turning on constant baselines.
   sketch.selectedDocument.selectedLayers.iterateWithFilter("isText", function(layer) {
     layer.useConstantBaselines = true
   })
 }
+
+
+// ## Job Done
+// And that's it.
+//
+// Obviously this is only the tip of the iceberg. Check out some of the other examples to see what else can be done.
+//
+// If you have questions, comments or any feedback, ping us at <developer@sketchapp.com>!
