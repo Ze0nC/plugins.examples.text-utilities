@@ -101,37 +101,29 @@ var processFragments = function(sketch, container, fragments, title, action) {
     var group = container.newGroup({"name": title });
     group.moveToBack();
 
-    var fragmentCount = fragments.count();
-    for (var i=0; i<fragmentCount; i++) {
-      var fragment = fragments[i];
-      action(sketch, group, fragment, i);
+    for (var i in fragments) {
+      action(sketch, group, fragments[i], i)
     }
 
     group.adjustToFit();
 }
 
-var addBaselines = function(sketch, container, fragments) {
+var addBaselines = function(sketch, layer, fragments) {
+    var container = layer.container
     processFragments(sketch, container, fragments, "Baselines", function(sketch, group, fragment, index) {
-        var rect = fragment.rect;
-        var baselineOffset = fragment.baselineOffset;
-        var baselineRect = sketch.rectangle(
-          NSMinX(rect),
-          NSMaxY(rect)-baselineOffset,
-          NSWidth(rect),
-          0.5
-        );
-        var localRect = group.pageRectToLocalRect(baselineRect);
-        group.newShape({"frame": localRect, fills: ["#ff000090"], borders: []});
+        var rect = layer.localRectToParentRect(fragment.rect)
+        rect.y += rect.height - fragment.baselineOffset
+        rect.height = 0.5
+        group.newShape({"frame": rect, fills: ["#ff000090"], borders: []});
     })
 }
 
 
-var addLineFragments = function(sketch, container, fragments) {
+var addLineFragments = function(sketch, layer, fragments) {
+    var container = layer.container
     processFragments(sketch, container, fragments, "Line Fragments", function(sketch, group, fragment, index) {
-        var rect = fragment.rect;
-        var fragmentRect = sketch.rectangle(rect.origin.x, rect.origin.y, rect.size.width, rect.size.height)
         var color = ( index & 1 ) ? "#00ff00ff" : "#00fff0044"
-        var localRect = group.pageRectToLocalRect(fragmentRect);
+        var localRect = layer.localRectToParentRect(fragment.rect)
         var line = group.newShape({"frame": localRect, fills: [color], borders: []});
     })
 }
@@ -140,7 +132,7 @@ var addLineFragments = function(sketch, container, fragments) {
 var onAddLineFragments = function(context) {
     var sketch = context.api()
     sketch.selectedDocument.selectedLayers.iterateWithFilter("isText", function(layer) {
-        addLineFragments(sketch, layer.container, layer.fragments)
+        addLineFragments(sketch, layer, layer.fragments)
     })
 };
 
@@ -148,7 +140,7 @@ var onAddLineFragments = function(context) {
 var onAddBaselines = function(context) {
     var sketch = context.api()
     sketch.selectedDocument.selectedLayers.iterateWithFilter("isText", function(layer) {
-        addBaselines(sketch, layer.container, layer.fragments)
+        addBaselines(sketch, layer, layer.fragments)
     })
 };
 
@@ -157,9 +149,8 @@ var onAddBoth = function(context) {
     var sketch = context.api()
     sketch.selectedDocument.selectedLayers.iterateWithFilter("isText", function(layer) {
         var lineFragments = layer.fragments
-        var container = layer.container
-        addBaselines(sketch, container, lineFragments)
-        addLineFragments(sketch, container, lineFragments)
+        addBaselines(sketch, layer, lineFragments)
+        addLineFragments(sketch, layer, lineFragments)
     })
 };
 
