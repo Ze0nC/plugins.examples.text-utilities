@@ -147,7 +147,7 @@ function addLineFragments(sketch, layer, fragments) {
   // The we process each fragment in turn
   processFragments(sketch, container, fragments, function(sketch, group, fragment, index) {
     // We alternate the color of the lines, so that we can tell them apart
-    var color = ( index & 1 ) ? "#00ff00ff" : "#00fff0044"
+    var color = ( index & 1 ) ? "#00ff00ff" : "#00ff0044"
 
     // We make a new shape layer with the rectangle of each line in turn
     var localRect = layer.localRectToParentRect(fragment.rect)
