@@ -1,6 +1,8 @@
 // Text Utilities, by Johnnie Walker — Source code available at [GitHub](https://github.com/BohemianCoding/plugins.examples.text-utilities)
 //
-// This plugin illustrates a few techniques:
+// This plugin provides some debugging tools which annotate text layers to show where their baselines and bounding boxes are.
+
+// The plugin illustrates a few techniques:
 // - iterating over the selected layers
 // - iterating over the position of each line in a text layer
 // - creating new layers
