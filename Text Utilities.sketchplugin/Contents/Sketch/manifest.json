@@ -2,38 +2,38 @@
   "author" : "Johnnie Walker",
   "commands" : [
     {
-      "script" : "baselines.cocoascript",
-      "handler" : "onRun",
+      "script" : "text-utilities.js",
+      "handler" : "onAddBoth",
       "shortcut" : "",
       "name" : "Add Line Fragments & Baselines",
       "identifier" : "fragmentsandbaselines"
     },
     {
-      "script" : "baselines.cocoascript",
+      "script" : "text-utilities.js",
       "handler" : "onAddBaselines",
       "shortcut" : "",
       "name" : "Add Baselines",
       "identifier" : "baselines"
     },
     {
-      "script" : "baselines.cocoascript",
+      "script" : "text-utilities.js",
       "handler" : "onAddLineFragments",
       "shortcut" : "",
       "name" : "Add Line Fragments",
       "identifier" : "fragments"
     },
     {
-      "script" : "consistentBaselines.cocoascript",
+      "script" : "text-utilities.js",
       "handler" : "onUseLegacyBaselines",
       "shortcut" : "",
-      "name" : "Use legacy typesetter",
-      "identifier" : "legacyTypestter"
+      "name" : "Use Legacy Typesetter",
+      "identifier" : "legacyTypesetter"
     },
     {
-      "script" : "consistentBaselines.cocoascript",
+      "script" : "text-utilities.js",
       "handler" : "onUseConstantBaselines",
       "shortcut" : "",
-      "name" : "Use constant baselines typesetter",
+      "name" : "Use Constant Baselines Typesetter",
       "identifier" : "constantBaselinesTypesetter"
     },
   ],
@@ -43,13 +43,13 @@
       "fragments",
       "fragmentsandbaselines",
       "-",
-      "legacyTypestter",
+      "legacyTypesetter",
       "constantBaselinesTypesetter",
     ],
   },
-  "identifier" : "com.randomsequence.sketch.baselines",
-  "version" : "1.0",
+  "identifier" : "com.sketchapp.examples.text-utilities",
+  "version" : "2.0",
   "description" : "Utilities for text layers",
-  "authorEmail" : "mail@example.com",
+  "authorEmail" : "developer@sketchapp.com",
   "name" : "Text Layer Utilities"
 }
