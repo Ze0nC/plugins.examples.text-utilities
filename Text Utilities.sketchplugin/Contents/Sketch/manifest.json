@@ -26,14 +26,14 @@
       "script" : "text-utilities.js",
       "handler" : "onUseLegacyBaselines",
       "shortcut" : "",
-      "name" : "Use legacy typesetter",
+      "name" : "Use Legacy Typesetter",
       "identifier" : "legacyTypesetter"
     },
     {
       "script" : "text-utilities.js",
       "handler" : "onUseConstantBaselines",
       "shortcut" : "",
-      "name" : "Use constant baselines typesetter",
+      "name" : "Use Constant Baselines Typesetter",
       "identifier" : "constantBaselinesTypesetter"
     },
   ],
